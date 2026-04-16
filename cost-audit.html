@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Operations Cost Audit — iccbop.com</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Free Operations Cost Audit — iccbop.com" />
+  <meta property="og:description" content="Find out what your field service software stack is actually costing you. Get your personalised results in minutes." />
+  <meta property="og:url" content="https://iccbop.com/cost-audit.html" />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:        #0d0d0d;
+      --green-deep:   #0e3d25;
+      --green-mid:    #1a5c3a;
+      --green-bright: #2d8a56;
+      --green-vivid:  #3aad6e;
+      --green-light:  #d4eddf;
+      --green-pale:   #f0faf5;
+      --white:        #ffffff;
+      --gray-mid:     #e0e0e0;
+      --gray-light:   #f5f5f5;
+      --gray-text:    #666;
+      --gray-muted:   #999;
+      --sp:           100px;
+      --side:         64px;
+      --max:          1040px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', Arial, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--side);
+      height: 64px;
+      background: var(--black);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .nav-logo {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      text-decoration: none;
+    }
+
+    .nav-logo-mark {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .nav-logo-mark em {
+      font-style: normal;
+      color: var(--green-bright);
+    }
+
+    .nav-logo-sub {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover,
+    .nav-link.active { color: var(--white); }
+
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--green-mid);
+      padding: 9px 18px;
+      border-radius: 3px;
+      transition: background 0.2s;
+    }
+
+    .nav-cta:hover { background: var(--green-bright); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: all 0.25s;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-nav {
+      display: none;
+      flex-direction: column;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: var(--black);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 20px var(--side) 28px;
+      gap: 0;
+      z-index: 99;
+    }
+
+    .mobile-nav.open { display: flex; }
+
+    .mobile-nav a {
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.7);
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: color 0.2s;
+    }
+
+    .mobile-nav a:last-child { border-bottom: none; }
+    .mobile-nav a:hover { color: var(--white); }
+
+    .mob-cta {
+      color: var(--green-vivid) !important;
+      font-weight: 600 !important;
+    }
+
+    /* ── Page layout ─────────────────────────────────────────────── */
+    main { padding-top: 64px; }
+
+    .section {
+      padding: var(--sp) var(--side);
+    }
+
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    /* ── Hero ────────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(160deg, var(--black) 0%, var(--green-deep) 100%);
+      padding: 80px var(--side) 72px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 70% 60%, rgba(45,138,86,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green-bright);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 1px;
+      background: var(--green-bright);
+    }
+
+    .hero-h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 400;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 20px;
+      max-width: 640px;
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.6;
+      max-width: 560px;
+      margin-bottom: 24px;
+    }
+
+    .hero-trust {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.3px;
+      max-width: 520px;
+      line-height: 1.7;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* ── Form section ─────────────────────────────────────────────── */
+    .form-section {
+      background: var(--black);
+      padding: 72px var(--side) 100px;
+    }
+
+    .form-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .form-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 48px 48px;
+    }
+
+    .form-section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green-bright);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 16px;
+    }
+
+    .form-group:last-child { margin-bottom: 0; }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.65);
+      letter-spacing: 0.2px;
+    }
+
+    .optional-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.25);
+      margin-left: 6px;
+      text-transform: uppercase;
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.5;
+      margin-top: -4px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 4px;
+      padding: 11px 14px;
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 14px;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(255,255,255,0.2);
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--green-bright);
+      background: rgba(45,138,86,0.06);
+    }
+
+    input.error,
+    select.error,
+    textarea.error {
+      border-color: #c0392b;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    select option {
+      background: #1a1a1a;
+      color: var(--white);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.5;
+    }
+
+    .form-divider {
+      margin: 32px 0;
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 15px 24px;
+      margin-top: 32px;
+      background: var(--green-bright);
+      color: var(--white);
+      border: none;
+      border-radius: 4px;
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      text-align: center;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: var(--green-vivid);
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-btn.loading {
+      background: var(--green-mid);
+    }
+
+    .form-privacy {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      margin-top: 14px;
+      line-height: 1.6;
+    }
+
+    .form-error {
+      display: none;
+      background: rgba(192,57,43,0.12);
+      border: 1px solid rgba(192,57,43,0.3);
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #e67e7e;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+
+    .form-error.visible { display: block; }
+
+    /* ── Confirmation state ──────────────────────────────────────── */
+    #confirmation {
+      display: none;
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 24px 0;
+    }
+
+    #confirmation.visible { display: block; }
+
+    .confirm-check {
+      width: 56px;
+      height: 56px;
+      background: rgba(45,138,86,0.15);
+      border: 2px solid var(--green-bright);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+      font-size: 22px;
+      color: var(--green-vivid);
+    }
+
+    .confirm-headline {
+      font-family: 'DM Serif Display', serif;
+      font-size: 30px;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 14px;
+      letter-spacing: -0.3px;
+    }
+
+    .confirm-body {
+      font-size: 15px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      max-width: 440px;
+      margin: 0 auto 32px;
+    }
+
+    .confirm-body strong {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .confirm-divider {
+      width: 40px;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+      margin: 32px auto;
+    }
+
+    .confirm-cta-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 16px;
+    }
+
+    .confirm-cta-link {
+      display: inline-block;
+      padding: 13px 28px;
+      background: rgba(45,138,86,0.12);
+      border: 1.5px solid var(--green-bright);
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--green-vivid);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .confirm-cta-link:hover {
+      background: rgba(45,138,86,0.22);
+      color: var(--white);
+    }
+
+    /* ── Footer ──────────────────────────────────────────────────── */
+    footer {
+      background: #080808;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 40px var(--side);
+    }
+
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .footer-brand strong {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .footer-brand strong em {
+      font-style: normal;
+      color: var(--green-bright);
+    }
+
+    .footer-brand p {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      margin-top: 4px;
+    }
+
+    .footer-brand p a {
+      color: inherit;
+      transition: color 0.2s;
+    }
+
+    .footer-brand p a:hover { color: rgba(255,255,255,0.6); }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: rgba(255,255,255,0.7); }
+
+    .footer-copy {
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      :root { --side: 32px; --sp: 72px; }
+
+      .nav-right { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    @media (max-width: 600px) {
+      :root { --side: 20px; --sp: 56px; }
+
+      .hero { padding: 56px var(--side) 52px; }
+
+      .form-card { padding: 28px 24px; }
+
+      .form-row { grid-template-columns: 1fr; gap: 0; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Navigation ─────────────────────────────────────────────── -->
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-mark"><em>BOP</em></div>
+      <div class="nav-logo-sub">By Independent Commerce</div>
+    </a>
+    <div class="nav-right" id="navRight">
+      <a href="index.html" class="nav-link" data-page="index">Overview</a>
+      <a href="index.html#screenshots" class="nav-link">See It Live</a>
+      <a href="pricing.html" class="nav-link" data-page="pricing">Pricing</a>
+      <a href="why-bop.html" class="nav-link" data-page="why-bop">Why BOP</a>
+      <a href="index.html#book" class="nav-cta">Book a Discovery Call →</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html" onclick="closeMenu()">Overview</a>
+    <a href="index.html#screenshots" onclick="closeMenu()">See It Live</a>
+    <a href="pricing.html" onclick="closeMenu()">Pricing</a>
+    <a href="why-bop.html" onclick="closeMenu()">Why BOP</a>
+    <a href="index.html#book" class="mob-cta" onclick="closeMenu()">Book a Discovery Call →</a>
+  </div>
+
+  <main>
+
+    <!-- ── Hero ───────────────────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-eyebrow">Free Tool — Operations Cost Audit</div>
+        <h1 class="hero-h1">Find out what your operation is actually costing you.</h1>
+        <p class="hero-sub">Fill out the form below. We'll run the numbers and send your results within minutes — no call required.</p>
+        <p class="hero-trust">Used by field service companies across Western Canada to benchmark their current software stack against a purpose-built alternative.</p>
+      </div>
+    </section>
+
+    <!-- ── Form ───────────────────────────────────────────────────── -->
+    <section class="form-section">
+      <div class="form-wrap">
+
+        <!-- Form -->
+        <div id="auditForm">
+          <form class="form-card" id="costAuditForm" novalidate>
+
+            <!-- Section 1 — Your Operation -->
+            <div class="form-section-label">Your Operation</div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" placeholder="First name" autocomplete="given-name" />
+              </div>
+              <div class="form-group">
+                <label for="business_name">Business Name</label>
+                <input type="text" id="business_name" name="business_name" placeholder="Your company name" autocomplete="organization" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" placeholder="you@yourbusiness.com" autocomplete="email" />
+            </div>
+
+            <div class="form-group form-divider" style="margin-bottom:0;">
+              <label for="team_size">Team Size</label>
+              <select id="team_size" name="team_size">
+                <option value="" disabled selected>Select team size</option>
+                <option value="1–5 employees">1–5 employees</option>
+                <option value="6–15 employees">6–15 employees</option>
+                <option value="16–35 employees">16–35 employees</option>
+                <option value="35+ employees">35+ employees</option>
+              </select>
+            </div>
+
+            <!-- Section 2 — Your Current Tools -->
+            <div class="form-section-label" style="margin-top:32px;">Your Current Tools</div>
+
+            <p class="field-hint" style="margin-bottom:20px;">List the tools you currently pay for — scheduling, invoicing, time tracking, job management, anything.</p>
+
+            <div class="form-group">
+              <label for="primary_software">Primary Field Software</label>
+              <input type="text" id="primary_software" name="primary_software" placeholder="e.g. Jobber, ServiceTitan, Workiz, HousecallPro — or None" />
+            </div>
+
+            <div class="form-group">
+              <label for="monthly_cost">Monthly Cost of Primary Software</label>
+              <input type="text" id="monthly_cost" name="monthly_cost" placeholder="$0.00 CAD/month — enter 0 if free or none" />
+            </div>
+
+            <div class="form-group">
+              <label for="other_tools">Other Tools You Pay For <span class="optional-tag">Optional</span></label>
+              <textarea id="other_tools" name="other_tools" placeholder="e.g. QuickBooks $60/mo, Google Workspace $18/mo — anything else"></textarea>
+            </div>
+
+            <!-- Section 3 — One More Thing -->
+            <div class="form-section-label" style="margin-top:32px;">One More Thing</div>
+
+            <div class="form-group">
+              <label for="biggest_headache">Biggest operational headache right now <span class="optional-tag">Optional</span></label>
+              <textarea id="biggest_headache" name="biggest_headache" placeholder="e.g. Crew accountability, job costing, invoicing delays — whatever costs you the most time or money"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Run My Audit →</button>
+
+            <p class="form-privacy">Results go to your inbox within minutes. We don't share your information.</p>
+
+            <div class="form-error" id="formError">
+              Something went wrong — please try again or email <a href="mailto:alex@iccbop.com" style="color:inherit;text-decoration:underline;">alex@iccbop.com</a>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Confirmation state -->
+        <div id="confirmation">
+          <div class="confirm-check">✓</div>
+          <h2 class="confirm-headline">Your audit is on its way.</h2>
+          <p class="confirm-body">We've sent your Operations Cost Audit to <strong id="confirmEmail"></strong>.<br />Results arrive within a few minutes — check your inbox.</p>
+          <div class="confirm-divider"></div>
+          <p class="confirm-cta-label">While you wait</p>
+          <a href="why-bop.html" class="confirm-cta-link">View Full Comparison →</a>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <strong><em>BOP</em> — Business Operations Platform</strong>
+        <p>By Independent Commerce &nbsp;·&nbsp; <a href="mailto:alex@iccbop.com">alex@iccbop.com</a> &nbsp;·&nbsp; Edmonton, AB — Serving Western Canada</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Overview</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="why-bop.html">Why BOP</a>
+        <a href="index.html#book">Book a Call</a>
+        <a href="https://independentcc.com">independentcc.com</a>
+      </div>
+      <div class="footer-copy">© 2026 Independent Commerce. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Webhook URL — replace with live Make.com URL before deploying ──
+    const MAKE_WEBHOOK_URL = 'MAKE_WEBHOOK_URL';
+
+    // ── Mobile nav ────────────────────────────────────────────────
+    function toggleMenu() {
+      const ham = document.getElementById('hamburger');
+      const nav = document.getElementById('mobileNav');
+      ham.classList.toggle('open');
+      nav.classList.toggle('open');
+    }
+
+    function closeMenu() {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobileNav').classList.remove('open');
+    }
+
+    // ── Form submission ───────────────────────────────────────────
+    document.getElementById('costAuditForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const btn = document.getElementById('submitBtn');
+      const errorEl = document.getElementById('formError');
+
+      // Clear previous error state
+      errorEl.classList.remove('visible');
+      document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+
+      // Collect values
+      const fields = {
+        first_name:       document.getElementById('first_name').value.trim(),
+        business_name:    document.getElementById('business_name').value.trim(),
+        email:            document.getElementById('email').value.trim(),
+        team_size:        document.getElementById('team_size').value,
+        primary_software: document.getElementById('primary_software').value.trim(),
+        monthly_cost:     document.getElementById('monthly_cost').value.trim(),
+        other_tools:      document.getElementById('other_tools').value.trim(),
+        biggest_headache: document.getElementById('biggest_headache').value.trim(),
+      };
+
+      // Validate required fields
+      const required = ['first_name', 'business_name', 'email', 'team_size', 'primary_software', 'monthly_cost'];
+      let valid = true;
+
+      required.forEach(key => {
+        if (!fields[key]) {
+          document.getElementById(key).classList.add('error');
+          valid = false;
+        }
+      });
+
+      // Basic email format check
+      if (fields.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) {
+        document.getElementById('email').classList.add('error');
+        valid = false;
+      }
+
+      if (!valid) {
+        const firstError = document.querySelector('.error');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      // Loading state
+      btn.disabled = true;
+      btn.textContent = 'Running your audit…';
+      btn.classList.add('loading');
+
+      try {
+        const response = await fetch(MAKE_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(fields),
+        });
+
+        if (!response.ok) throw new Error('Non-2xx response');
+
+        // Success — show confirmation
+        document.getElementById('confirmEmail').textContent = fields.email;
+        document.getElementById('auditForm').style.display = 'none';
+        const confirm = document.getElementById('confirmation');
+        confirm.classList.add('visible');
+        confirm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } catch (err) {
+        errorEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = 'Run My Audit →';
+        btn.classList.remove('loading');
+        errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+
+    // Clear error state on input
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+      el.addEventListener('input', () => el.classList.remove('error'));
+      el.addEventListener('change', () => el.classList.remove('error'));
+    });
+  </script>
+
+</body>
+</html>
