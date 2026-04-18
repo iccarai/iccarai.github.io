@@ -1,23 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1502185384838287');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Free Operations Cost Audit — iccbop.com</title>
@@ -355,6 +338,7 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
 
     input[type="text"],
     input[type="email"],
+    input[type="number"],
     select,
     textarea {
       width: 100%;
@@ -371,6 +355,9 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
       -webkit-appearance: none;
     }
 
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
     input::placeholder,
     textarea::placeholder {
       color: rgba(255,255,255,0.2);
@@ -378,6 +365,7 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
 
     input[type="text"]:focus,
     input[type="email"]:focus,
+    input[type="number"]:focus,
     select:focus,
     textarea:focus {
       border-color: var(--green-bright);
@@ -413,6 +401,58 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
       margin: 32px 0;
     }
 
+    /* ── Other software reveal ───────────────────────────────────── */
+    #other-software-fields {
+      display: none;
+      margin-top: 16px;
+    }
+
+    #other-software-fields.visible {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── Other tools rows ────────────────────────────────────────── */
+    .tool-row {
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .tool-row + .tool-row {
+      margin-top: 12px;
+    }
+
+    .cost-prefix-wrap {
+      position: relative;
+    }
+
+    .cost-prefix-wrap::before {
+      content: '$';
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: rgba(255,255,255,0.3);
+      pointer-events: none;
+    }
+
+    .cost-prefix-wrap input {
+      padding-left: 26px;
+    }
+
+    .cost-suffix {
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      margin-top: 5px;
+      text-align: right;
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* ── Submit ──────────────────────────────────────────────────── */
     .submit-btn {
       display: block;
       width: 100%;
@@ -621,6 +661,10 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
       .form-card { padding: 28px 24px; }
 
       .form-row { grid-template-columns: 1fr; gap: 0; }
+
+      .tool-row { grid-template-columns: 1fr; }
+
+      .cost-suffix { text-align: left; }
     }
   </style>
 </head>
@@ -669,7 +713,6 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
     <section class="form-section">
       <div class="form-wrap">
 
-        <!-- Form -->
         <div id="auditForm">
           <form class="form-card" id="costAuditForm" novalidate>
 
@@ -706,21 +749,84 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
             <!-- Section 2 — Your Current Tools -->
             <div class="form-section-label" style="margin-top:32px;">Your Current Tools</div>
 
-            <p class="field-hint" style="margin-bottom:20px;">List the tools you currently pay for — scheduling, invoicing, time tracking, job management, anything.</p>
-
+            <!-- Primary software dropdown -->
             <div class="form-group">
               <label for="primary_software">Primary Field Software</label>
-              <input type="text" id="primary_software" name="primary_software" placeholder="e.g. Jobber, ServiceTitan, Workiz, HousecallPro — or None" />
+              <select id="primary_software" name="primary_software">
+                <option value="" disabled selected>Select your primary platform</option>
+                <option value="Jobber">Jobber</option>
+                <option value="ServiceTitan">ServiceTitan</option>
+                <option value="HousecallPro">HousecallPro</option>
+                <option value="Workiz">Workiz</option>
+                <option value="other">Other</option>
+              </select>
             </div>
 
-            <div class="form-group">
-              <label for="monthly_cost">Monthly Cost of Primary Software</label>
-              <input type="text" id="monthly_cost" name="monthly_cost" placeholder="$0.00 CAD/month — enter 0 if free or none" />
+            <!-- Other software name + cost — shown only when Other is selected -->
+            <div id="other-software-fields">
+              <div class="form-group">
+                <label for="other_software_name">Software Name</label>
+                <input type="text" id="other_software_name" name="other_software_name" placeholder="e.g. FieldEdge, ServiceMax" />
+              </div>
+              <div class="form-group">
+                <label for="other_software_cost">Monthly Cost <span class="optional-tag">CAD/mo</span></label>
+                <div class="cost-prefix-wrap">
+                  <input type="number" id="other_software_cost" name="other_software_cost" placeholder="0" min="0" step="1" />
+                </div>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="other_tools">Other Tools You Pay For <span class="optional-tag">Optional</span></label>
-              <textarea id="other_tools" name="other_tools" placeholder="e.g. QuickBooks $60/mo, Google Workspace $18/mo — anything else"></textarea>
+            <!-- Primary software monthly cost — shown for known platforms -->
+            <div class="form-group" id="primary-cost-group">
+              <label for="monthly_cost">Monthly Cost of Primary Software <span class="optional-tag">CAD/mo</span></label>
+              <div class="cost-prefix-wrap">
+                <input type="number" id="monthly_cost" name="monthly_cost" placeholder="0" min="0" step="1" />
+              </div>
+            </div>
+
+            <!-- Other tools — 3 structured rows -->
+            <div class="form-group" style="margin-bottom:8px;">
+              <label>Other Tools You Pay For <span class="optional-tag">Optional</span></label>
+              <p class="field-hint" style="margin-top:4px;">e.g. QuickBooks, Google Workspace, phone system, time tracking</p>
+            </div>
+
+            <div class="tool-row">
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="tool1_name" style="font-size:11px;color:rgba(255,255,255,0.35);">Tool 1</label>
+                <input type="text" id="tool1_name" name="tool1_name" placeholder="Tool name" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="tool1_cost" style="font-size:11px;color:rgba(255,255,255,0.35);">$/mo</label>
+                <div class="cost-prefix-wrap">
+                  <input type="number" id="tool1_cost" name="tool1_cost" placeholder="0" min="0" step="1" />
+                </div>
+              </div>
+            </div>
+
+            <div class="tool-row">
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="tool2_name" style="font-size:11px;color:rgba(255,255,255,0.35);">Tool 2</label>
+                <input type="text" id="tool2_name" name="tool2_name" placeholder="Tool name" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="tool2_cost" style="font-size:11px;color:rgba(255,255,255,0.35);">$/mo</label>
+                <div class="cost-prefix-wrap">
+                  <input type="number" id="tool2_cost" name="tool2_cost" placeholder="0" min="0" step="1" />
+                </div>
+              </div>
+            </div>
+
+            <div class="tool-row" style="margin-bottom:16px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="tool3_name" style="font-size:11px;color:rgba(255,255,255,0.35);">Tool 3</label>
+                <input type="text" id="tool3_name" name="tool3_name" placeholder="Tool name" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="tool3_cost" style="font-size:11px;color:rgba(255,255,255,0.35);">$/mo</label>
+                <div class="cost-prefix-wrap">
+                  <input type="number" id="tool3_cost" name="tool3_cost" placeholder="0" min="0" step="1" />
+                </div>
+              </div>
             </div>
 
             <!-- Section 3 — One More Thing -->
@@ -776,15 +882,12 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
   </footer>
 
   <script>
-    // ── Webhook URL — replace with live Make.com URL before deploying ──
-    const WEBHOOK_URL = 'https://hook.us2.make.com/nbkhjig90mncpze2qhhosb174nby8o2j';
+    const MAKE_WEBHOOK_URL = 'MAKE_WEBHOOK_URL';
 
     // ── Mobile nav ────────────────────────────────────────────────
     function toggleMenu() {
-      const ham = document.getElementById('hamburger');
-      const nav = document.getElementById('mobileNav');
-      ham.classList.toggle('open');
-      nav.classList.toggle('open');
+      document.getElementById('hamburger').classList.toggle('open');
+      document.getElementById('mobileNav').classList.toggle('open');
     }
 
     function closeMenu() {
@@ -792,43 +895,79 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
       document.getElementById('mobileNav').classList.remove('open');
     }
 
+    // ── Show/hide Other software fields ───────────────────────────
+    const primarySelect = document.getElementById('primary_software');
+    const otherFields   = document.getElementById('other-software-fields');
+    const primaryCostGroup = document.getElementById('primary-cost-group');
+
+    primarySelect.addEventListener('change', function () {
+      if (this.value === 'other') {
+        otherFields.classList.add('visible');
+        primaryCostGroup.style.display = 'none';
+      } else {
+        otherFields.classList.remove('visible');
+        primaryCostGroup.style.display = 'flex';
+        document.getElementById('other_software_name').value = '';
+        document.getElementById('other_software_cost').value = '';
+      }
+    });
+
     // ── Form submission ───────────────────────────────────────────
     document.getElementById('costAuditForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      const btn = document.getElementById('submitBtn');
+      const btn     = document.getElementById('submitBtn');
       const errorEl = document.getElementById('formError');
 
-      // Clear previous error state
       errorEl.classList.remove('visible');
       document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
 
-      // Collect values
-      const fields = {
-        first_name:       document.getElementById('first_name').value.trim(),
-        business_name:    document.getElementById('business_name').value.trim(),
-        email:            document.getElementById('email').value.trim(),
-        team_size:        document.getElementById('team_size').value,
-        primary_software: document.getElementById('primary_software').value.trim(),
-        monthly_cost:     document.getElementById('monthly_cost').value.trim(),
-        other_tools:      document.getElementById('other_tools').value.trim(),
-        biggest_headache: document.getElementById('biggest_headache').value.trim(),
-      };
+      const isOther = primarySelect.value === 'other';
+
+      // Resolve primary software name and cost
+      const primarySoftwareName = isOther
+        ? document.getElementById('other_software_name').value.trim()
+        : primarySelect.value;
+
+      const primaryCost = isOther
+        ? parseFloat(document.getElementById('other_software_cost').value) || 0
+        : parseFloat(document.getElementById('monthly_cost').value) || 0;
+
+      // Other tools
+      const tool1Name = document.getElementById('tool1_name').value.trim();
+      const tool1Cost = parseFloat(document.getElementById('tool1_cost').value) || 0;
+      const tool2Name = document.getElementById('tool2_name').value.trim();
+      const tool2Cost = parseFloat(document.getElementById('tool2_cost').value) || 0;
+      const tool3Name = document.getElementById('tool3_name').value.trim();
+      const tool3Cost = parseFloat(document.getElementById('tool3_cost').value) || 0;
+
+      const otherToolsMonthly = tool1Cost + tool2Cost + tool3Cost;
+
+      // Format other_tools as a readable string for Airtable/email
+      const otherToolsList = [
+        tool1Name ? `${tool1Name}: $${tool1Cost}/mo` : null,
+        tool2Name ? `${tool2Name}: $${tool2Cost}/mo` : null,
+        tool3Name ? `${tool3Name}: $${tool3Cost}/mo` : null,
+      ].filter(Boolean).join(', ') || 'None';
 
       // Validate required fields
-      const required = ['first_name', 'business_name', 'email', 'team_size', 'primary_software', 'monthly_cost'];
       let valid = true;
 
-      required.forEach(key => {
-        if (!fields[key]) {
-          document.getElementById(key).classList.add('error');
-          valid = false;
-        }
+      ['first_name', 'business_name', 'email', 'team_size'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) { el.classList.add('error'); valid = false; }
       });
 
-      // Basic email format check
-      if (fields.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) {
-        document.getElementById('email').classList.add('error');
+      if (!primarySelect.value) { primarySelect.classList.add('error'); valid = false; }
+
+      if (isOther && !primarySoftwareName) {
+        document.getElementById('other_software_name').classList.add('error');
+        valid = false;
+      }
+
+      const emailEl = document.getElementById('email');
+      if (emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())) {
+        emailEl.classList.add('error');
         valid = false;
       }
 
@@ -838,22 +977,32 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
         return;
       }
 
-      // Loading state
       btn.disabled = true;
       btn.textContent = 'Running your audit…';
       btn.classList.add('loading');
 
+      const payload = {
+        first_name:           document.getElementById('first_name').value.trim(),
+        business_name:        document.getElementById('business_name').value.trim(),
+        email:                document.getElementById('email').value.trim(),
+        team_size:            document.getElementById('team_size').value,
+        primary_software:     primarySoftwareName,
+        monthly_cost:         primaryCost,
+        other_tools:          otherToolsList,
+        other_tools_monthly:  otherToolsMonthly,
+        biggest_headache:     document.getElementById('biggest_headache').value.trim(),
+      };
+
       try {
-        const response = await fetch(WEBHOOK_URL, {
+        const response = await fetch(MAKE_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(fields),
+          body: JSON.stringify(payload),
         });
 
         if (!response.ok) throw new Error('Non-2xx response');
 
-        // Success — show confirmation
-        document.getElementById('confirmEmail').textContent = fields.email;
+        document.getElementById('confirmEmail').textContent = payload.email;
         document.getElementById('auditForm').style.display = 'none';
         const confirm = document.getElementById('confirmation');
         confirm.classList.add('visible');
@@ -868,9 +1017,9 @@ src="https://www.facebook.com/tr?id=1502185384838287&ev=PageView&noscript=1"
       }
     });
 
-    // Clear error state on input
+    // Clear error on input
     document.querySelectorAll('input, select, textarea').forEach(el => {
-      el.addEventListener('input', () => el.classList.remove('error'));
+      el.addEventListener('input',  () => el.classList.remove('error'));
       el.addEventListener('change', () => el.classList.remove('error'));
     });
   </script>
